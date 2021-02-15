@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset='utf-8'>
+	<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	<title>Page Title</title>
+	<meta name='viewport' content='width=device-width, initial-scale=1'>
+
+	<!-- CSS -->
+	<style>
+		nav {
+			font-family: sans-serif;
+			font-size: medium;
+			display: flex;
+			flex-direction: row;
+			margin-bottom: 2vh;
+			padding-bottom: 2vh;
+			border-bottom: thin solid grey;
+		}
+		nav button {
+			margin-right: 0.5vw;
+		}
+		main {
+			/*background-image: linear-gradient(to right, grey 5px, transparent 1px), linear-gradient(to bottom, grey 1px, transparent 1px);*/
+			/*background-image: repeating-linear-gradient(to left, blue, red 50px);*/
+			/*background-image: repeating-linear-gradient(to left, transparent, transparent 50px,black 50px,black 40px);*/
+			background-image: linear-gradient(rgba(0, 255, 0, .7) .1em, transparent .1em), linear-gradient(90deg, rgba(0, 255, 0, .7) .1em, transparent .1em);
+      		background-size: 50px 50px;
+			height: 100vh;
+		}
+		#move-me{
+			border: thin solid greenyellow;
+			background-color: grey;
+			height: 50px;
+			width: 50px;
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+	<!-- DOM -->
+	<nav>
+		<button type="button" id="move-u">up</button>
+		<button type="button" id="move-d">down</button>
+		<button type="button" id="move-l">left</button>
+		<button type="button" id="move-r">right</button>
+		<label for="move-amount">amount</label>
+		<input type="range" id="move-amount" min="0" max="+500" step="50" value="50">
+		<button type="button" id="check-field">Get message</button>
+	</nav>
+	<main>
+		<div id="grid"></div>
+
+		<div id="move-me"></div>
+	</main>
+
+	<!-- JAVASCRIPT -->
+	<script>
+		
+		// button elements
+		var upBtn = document.getElementById("move-u");
+		var downBtn = document.getElementById("move-d");
+		var leftBtn = document.getElementById("move-l");
+		var rightBtn = document.getElementById("move-r");
+		var checkBtn = document.getElementById("check-field");
+		var amountBtn = document.getElementById("move-amount");
+		// other variables
+		var moveAmount = Number(amountBtn.value); // gets the initial value
+		var xOffset = 0;
+		var yOffset = 0;
+		var moveMe = document.getElementById("move-me");
+		
+		// objects
+		let test = {
+			x: 136,
+			y: 124
+		}
+
+		// feedback
+		console.log("moveAmount set to ", moveAmount);
+
+		//--- EVENT LISTENERS
+
+		window.onkeydown = moveEl(moveMe, evt.key, moveAmount);
+		amountBtn.onchange = setMoveAmount(evt);
+		// move buttons
+		upBtn.onclick = moveEl(moveMe, 'up', moveAmount);
+		downBtn.onclick = moveEl(moveMe, 'down', moveAmount);
+		leftBtn.onclick = moveEl(moveMe, 'left', moveAmount);
+		rightBtn.onclick = moveEl(moveMe, 'right', moveAmount);
+		// check button
+		checkBtn.onclick = elIncludesCoords(moveMe, test.x, test.y);
+
+		//---  FUNCTIONS ---
+		
+		function setMoveAmount(evt) {
+			moveAmount = Number(evt.target.value);
+			console.log(`moveAmount changed to ${moveAmount}`);
+		}
+		
+
+		function moveEl(elem, dir, amount) {
+
+			switch (dir) {
+				case 'up' || 'ArrowUp':
+					yOffset -= amount;
+					console.log("yOffset = ", yOffset);
+					break;
+				case 'down' || 'ArrowDown':
+					yOffset += amount;
+					console.log("yOffset = ", yOffset);
+					break;
+				case 'left' || 'ArrowLeft':
+					xOffset -= amount;
+					console.log("xOffset = ", xOffset);
+					break;
+				case 'right' || 'ArrowRight':
+					xOffset += amount;
+					console.log("xOffset = ", xOffset);
+					break;
+				default:
+					break;
+			}
+			elem.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+		}
+
+		function elIncludesCoords(elem, x, y) {
+
+			let coords = elem.getBoundingClientRect();
+			
+			if (coords.left < x < coords.right) {
+				console.log(`${x} lies horizontally within ${elem}`);
+			}
+			if (coords.top < y < coords.bottom) {
+				console.log(`${y} lies vertically within ${elem}`);
+			}
+
+			// console.log(`top: ${coords.top}`);
+			// console.log(`bottom: ${coords.bottom}`);
+			// console.log(`left: ${coords.left}`);
+			// console.log(`right: ${coords.right}`);
+
+		}
+
+		function createMessageUnder(anchorElem, content) {
+			let message = document.createElement('div');
+			message.style.cssText = "position:fixed; color: red";
+			message.classList.add('message');
+			// assign coordinates, don't forget "px"!
+			let coords = anchorElem.getBoundingClientRect();
+			
+			message.style.left = coords.left + "px";
+			message.style.top = coords.bottom + "px";
+			
+			message.textContent = content;
+			
+			return message;
+		}
+
+		/*
+		
+		function catchKey(evt) {
+
+			evt.preventDefault();
+			//console.log("evt.key = ", evt.key);
+			switch (evt.key) {
+				case "ArrowDown":
+					//console.log('key pressed: ', evt.key);
+					moveEl(moveMe, 'down');
+					break;
+				case "ArrowUp":
+					moveEl(moveMe, 'up');	
+					break;
+				case "ArrowLeft":
+					moveEl(moveMe, 'left');
+					break;
+				case "ArrowRight":
+					moveEl(moveMe, 'right');
+					break;	
+				default:
+					break;
+			}
+		}
+		*/
+		
+	</script>
+</body>
+</html>
